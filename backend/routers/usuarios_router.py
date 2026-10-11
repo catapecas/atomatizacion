@@ -5,15 +5,12 @@ from database.connection import get_db_connection
 
 router = APIRouter(prefix="/api/usuarios", tags=["Gestión de Usuarios"])
 
-class UsuarioCreate(BaseModel.model if hasattr(BaseModel, 'model') else BaseModel):
-    pass # Definiremos los campos abajo
-
-# Redefinimos con Pydantic limpio
+# Modelo corregido para permitir registro flexible desde la web
 class UsuarioCreate(BaseModel):
     nombre: str
     email: str
-    password_hash: str
-    id_rol: int
+    password_hash: Optional[str] = "default_hash"
+    id_rol: Optional[int] = 1
 
 class UsuarioUpdate(BaseModel):
     nombre: Optional[str] = None

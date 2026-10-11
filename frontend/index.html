@@ -11,8 +11,10 @@
     <style>
         body { background-color: #f4f7f6; }
         .sidebar { background: #212529; min-height: 100vh; color: white; }
-        .card { border: none; border-radius: 12px; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
         .nav-pills .nav-link.active { background-color: #0d6efd; font-weight: bold; }
+        .kpi-card { border-left: 4px solid #0d6efd; transition: transform 0.2s; }
+        .kpi-card:hover { transform: translateY(-3px); }
     </style>
 </head>
 <body>
@@ -26,7 +28,12 @@
                 </h4>
                 <ul class="nav nav-pills flex-column mt-3 gap-2" id="v-pills-tab" role="tablist">
                     <li class="nav-item">
-                        <button class="nav-link active text-start w-100 text-white" id="tab-equipos" data-bs-toggle="pill" data-bs-target="#content-equipos" type="button" onclick="cargarEquipos()">
+                        <button class="nav-link active text-start w-100 text-white" id="tab-dashboard" data-bs-toggle="pill" data-bs-target="#content-dashboard" type="button" onclick="cargarDashboard()">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link text-start w-100 text-white" id="tab-equipos" data-bs-toggle="pill" data-bs-target="#content-equipos" type="button" onclick="cargarEquipos()">
                             <i class="bi bi-cpu me-2"></i> Equipos
                         </button>
                     </li>
@@ -55,11 +62,58 @@
                 <!-- Contenido Dinámico con Pestañas -->
                 <div class="tab-content" id="v-pills-tabContent">
                     
+                    <!-- SECCIÓN DASHBOARD (KPIs) -->
+                    <div class="tab-pane fade show active" id="content-dashboard" role="tabpanel">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <div class="card kpi-card p-4 bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted text-uppercase fw-bold fs-7">Total Equipos</h6>
+                                            <h2 class="fw-bold text-primary mb-0" id="kpi-total-equipos">0</h2>
+                                        </div>
+                                        <div class="fs-1 text-primary opacity-50"><i class="bi bi-cpu"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card kpi-card p-4 bg-white" style="border-left-color: #198754;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted text-uppercase fw-bold fs-7">Equipos Operativos</h6>
+                                            <h2 class="fw-bold text-success mb-0" id="kpi-operativos">0</h2>
+                                        </div>
+                                        <div class="fs-1 text-success opacity-50"><i class="bi bi-check-circle"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card kpi-card p-4 bg-white" style="border-left-color: #ffc107;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted text-uppercase fw-bold fs-7">Órdenes de Trabajo</h6>
+                                            <h2 class="fw-bold text-warning mb-0" id="kpi-ordenes">0</h2>
+                                        </div>
+                                        <div class="fs-1 text-warning opacity-50"><i class="bi bi-clipboard-data"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card p-4 text-center bg-white shadow-sm">
+                            <h4 class="fw-bold text-secondary mb-3">Bienvenido al Sistema de Gestión Industrial</h4>
+                            <p class="text-muted">Utiliza la barra lateral para gestionar equipos, usuarios y órdenes de trabajo de manera rápida y segura.</p>
+                            <div>
+                                <button class="btn btn-outline-primary" onclick="cargarDashboard()"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar Métricas</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- SECCIÓN EQUIPOS -->
-                    <div class="tab-pane fade show active" id="content-equipos" role="tabpanel">
-                        <div class="card shadow-sm p-4 mb-4">
+                    <div class="tab-pane fade" id="content-equipos" role="tabpanel">
+                        <div class="card p-4 mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="fw-bold text-secondary"><i class="bi bi-cpu me-2"></i> Listado de Equipos de Automatización</h4>
+                                <h4 class="fw-bold text-secondary"><i class="bi bi-cpu me-2"></i> Listado de Equipos</h4>
                                 <div>
                                     <button class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEquipo">
                                         <i class="bi bi-plus-circle me-1"></i> Nuevo Equipo
@@ -79,11 +133,10 @@
                                             <th>Tipo</th>
                                             <th>Ubicación</th>
                                             <th>Estado</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Se llena con JS -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
@@ -91,10 +144,17 @@
 
                     <!-- SECCIÓN USUARIOS -->
                     <div class="tab-pane fade" id="content-usuarios" role="tabpanel">
-                        <div class="card shadow-sm p-4 mb-4">
+                        <div class="card p-4 mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="fw-bold text-secondary"><i class="bi bi-people me-2"></i> Listado de Usuarios del Sistema</h4>
-                                <button class="btn btn-primary btn-sm" onclick="cargarUsuarios()"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+                                <h4 class="fw-bold text-secondary"><i class="bi bi-people me-2"></i> Listado de Usuarios</h4>
+                                <div>
+                                    <button class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalUsuario">
+                                        <i class="bi bi-person-plus me-1"></i> Nuevo Usuario
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="cargarUsuarios()">
+                                        <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                                    </button>
+                                </div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mt-2" id="tabla-usuarios">
@@ -106,9 +166,7 @@
                                             <th>Rol</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Se llena con JS -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
@@ -116,10 +174,17 @@
 
                     <!-- SECCIÓN ÓRDENES DE TRABAJO -->
                     <div class="tab-pane fade" id="content-ordenes" role="tabpanel">
-                        <div class="card shadow-sm p-4 mb-4">
+                        <div class="card p-4 mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h4 class="fw-bold text-secondary"><i class="bi bi-clipboard-data me-2"></i> Órdenes de Trabajo (Relacionales)</h4>
-                                <button class="btn btn-primary btn-sm" onclick="cargarOrdenes()"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+                                <div>
+                                    <button class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalOrden" onclick="prepararModalOrden()">
+                                        <i class="bi bi-file-earmark-plus me-1"></i> Nueva Orden
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="cargarOrdenes()">
+                                        <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                                    </button>
+                                </div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle mt-2" id="tabla-ordenes">
@@ -133,9 +198,7 @@
                                             <th>Estado</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- Se llena con JS -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
@@ -146,13 +209,13 @@
         </div>
     </div>
 
-    <!-- MODAL PARA CREAR NUEVO EQUIPO -->
-    <div class="modal fade" id="modalEquipo" tabindex="-1" aria-labelledby="modalEquipoLabel" aria-hidden="true">
+    <!-- MODAL NUEVO EQUIPO -->
+    <div class="modal fade" id="modalEquipo" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalEquipoLabel"><i class="bi bi-plus-circle me-2"></i> Registrar Nuevo Equipo</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i> Registrar Nuevo Equipo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="form-equipo">
@@ -162,7 +225,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nombre del Equipo</label>
-                            <input type="text" class="form-control" id="nombre_equipo" required placeholder="Ej. Brazo Robotico KUKA">
+                            <input type="text" class="form-control" id="nombre_equipo" required placeholder="Ej. Brazo Robotico">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tipo</label>
@@ -170,17 +233,125 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Ubicación en Planta</label>
-                            <input type="text" class="form-control" id="ubicacion_planta" required placeholder="Ej. Linea de Ensamblaje 2">
+                            <input type="text" class="form-control" id="ubicacion_planta" required placeholder="Ej. Linea 2">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Estado</label>
+                            <label class="form-label fw-bold">Estado Inicial</label>
                             <select class="form-select" id="estado">
                                 <option value="Operativo">Operativo</option>
                                 <option value="En Mantenimiento">En Mantenimiento</option>
                                 <option value="Fuera de Servicio">Fuera de Servicio</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save me-1"></i> Guardar Equipo</button>
+                        <button type="submit" class="btn btn-primary w-100">Guardar Equipo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO USUARIO -->
+    <div class="modal fade" id="modalUsuario" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i> Registrar Nuevo Usuario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-usuario">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nombre Completo</label>
+                            <input type="text" class="form-control" id="usr-nombre" required placeholder="Ej. Carlos Pérez">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="usr-correo" required placeholder="Ej. carlos@empresa.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Rol</label>
+                            <select class="form-select" id="usr-rol">
+                                <option value="Tecnico">Técnico</option>
+                                <option value="Operador">Operador</option>
+                                <option value="Administrador">Administrador</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Guardar Usuario</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVA ORDEN DE TRABAJO -->
+    <div class="modal fade" id="modalOrden" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-plus me-2"></i> Registrar Orden de Trabajo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-orden">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Seleccionar Equipo</label>
+                            <select class="form-select" id="ot-id-equipo" required>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Usuario Solicitante</label>
+                            <select class="form-select" id="ot-id-usuario" required>
+                                <!-- Se llena dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Descripción de la Falla</label>
+                            <textarea class="form-control" id="ot-descripcion" rows="3" required placeholder="Detalle el problema detectado..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Prioridad</label>
+                            <select class="form-select" id="ot-prioridad">
+                                <option value="Baja">Baja</option>
+                                <option value="Media">Media</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Estado de la Orden</label>
+                            <select class="form-select" id="ot-estado">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En Proceso">En Proceso</option>
+                                <option value="Completada">Completada</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 fw-bold">Crear Orden de Trabajo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CAMBIAR ESTADO DE EQUIPO -->
+    <div class="modal fade" id="modalEstado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i> Cambiar Estado del Equipo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-cambiar-estado">
+                        <input type="hidden" id="edit-id-equipo">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nuevo Estado</label>
+                            <select class="form-select" id="nuevo-estado" required>
+                                <option value="Operativo">Operativo</option>
+                                <option value="En Mantenimiento">En Mantenimiento</option>
+                                <option value="Fuera de Servicio">Fuera de Servicio</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Actualizar Estado</button>
                     </form>
                 </div>
             </div>
@@ -190,9 +361,25 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Script JavaScript para consumir y enviar datos a la API -->
+    <!-- Script JavaScript Completo -->
     <script>
         const BASE_URL = "https://vigilant-space-computing-4jv94p6g5r9rcjv47-8000.app.github.dev";
+
+        // Cargar Dashboard (KPIs)
+        async function cargarDashboard() {
+            try {
+                const resEq = await fetch(`${BASE_URL}/api/equipos/`);
+                const equipos = await resEq.json();
+                
+                const resOt = await fetch(`${BASE_URL}/api/ordenes/`);
+                const ordenes = await resOt.json();
+
+                document.getElementById("kpi-total-equipos").innerText = equipos.length;
+                const operativos = equipos.filter(eq => eq.estado === 'Operativo').length;
+                document.getElementById("kpi-operativos").innerText = operativos;
+                document.getElementById("kpi-ordenes").innerText = ordenes.length;
+            } catch (err) { console.error(err); }
+        }
 
         // Cargar Equipos
         async function cargarEquipos() {
@@ -202,13 +389,22 @@
                 const tbody = document.querySelector("#tabla-equipos tbody");
                 tbody.innerHTML = "";
                 data.forEach(eq => {
+                    let badgeColor = 'bg-success';
+                    if (eq.estado === 'En Mantenimiento') badgeColor = 'bg-warning text-dark';
+                    if (eq.estado === 'Fuera de Servicio') badgeColor = 'bg-danger';
+
                     tbody.innerHTML += `<tr>
                         <td><strong>#${eq.id_equipo}</strong></td>
                         <td>${eq.codigo_activo}</td>
                         <td>${eq.nombre_equipo}</td>
                         <td>${eq.tipo}</td>
                         <td>${eq.ubicacion_planta}</td>
-                        <td><span class="badge bg-success">${eq.estado}</span></td>
+                        <td><span class="badge ${badgeColor}">${eq.estado}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="abrirModalEstado(${eq.id_equipo}, '${eq.estado}')">
+                                <i class="bi bi-pencil-square"></i> Estado
+                            </button>
+                        </td>
                     </tr>`;
                 });
             } catch (err) { console.error(err); }
@@ -232,7 +428,7 @@
             } catch (err) { console.error(err); }
         }
 
-        // Cargar Órdenes de Trabajo (con JOIN del backend)
+        // Cargar Órdenes de Trabajo
         async function cargarOrdenes() {
             try {
                 const res = await fetch(`${BASE_URL}/api/ordenes/`);
@@ -253,10 +449,32 @@
             } catch (err) { console.error(err); }
         }
 
-        // Enviar formulario para crear un nuevo equipo por POST
+        // Preparar selects del modal de Órdenes de Trabajo cargando equipos y usuarios disponibles
+        async function prepararModalOrden() {
+            try {
+                // Cargar equipos
+                const resEq = await fetch(`${BASE_URL}/api/equipos/`);
+                const equipos = await resEq.json();
+                const selectEq = document.getElementById("ot-id-equipo");
+                selectEq.innerHTML = "";
+                equipos.forEach(eq => {
+                    selectEq.innerHTML += `<option value="${eq.id_equipo}">${eq.nombre_equipo} (${eq.codigo_activo})</option>`;
+                });
+
+                // Cargar usuarios
+                const resUsr = await fetch(`${BASE_URL}/api/usuarios/`);
+                const usuarios = await resUsr.json();
+                const selectUsr = document.getElementById("ot-id-usuario");
+                selectUsr.innerHTML = "";
+                usuarios.forEach(u => {
+                    selectUsr.innerHTML += `<option value="${u.id_usuario}">${u.nombre} - Rol: ${u.rol}</option>`;
+                });
+            } catch (err) { console.error("Error al preparar selectores", err); }
+        }
+
+        // POST: Crear Equipo
         document.getElementById("form-equipo").addEventListener("submit", async (e) => {
             e.preventDefault();
-            
             const nuevoEquipo = {
                 codigo_activo: document.getElementById("codigo_activo").value,
                 nombre_equipo: document.getElementById("nombre_equipo").value,
@@ -271,28 +489,96 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(nuevoEquipo)
                 });
-
                 if (res.ok) {
                     alert("¡Equipo creado exitosamente!");
-                    // Cerrar modal
-                    const modalEl = document.getElementById('modalEquipo');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                    // Limpiar formulario
+                    bootstrap.Modal.getInstance(document.getElementById('modalEquipo')).hide();
                     document.getElementById("form-equipo").reset();
-                    // Recargar tabla de equipos
                     cargarEquipos();
-                } else {
-                    alert("Error al crear el equipo");
-                }
-            } catch (err) {
-                alert("Error de conexión: " + err);
-            }
+                    cargarDashboard();
+                } else { alert("Error al crear el equipo"); }
+            } catch (err) { alert("Error: " + err); }
         });
 
-        // Cargar equipos al iniciar la página
+        // POST: Crear Usuario
+        document.getElementById("form-usuario").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const nuevoUsuario = {
+                nombre: document.getElementById("usr-nombre").value,
+                correo: document.getElementById("usr-correo").value,
+                rol: document.getElementById("usr-rol").value
+            };
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/usuarios/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(nuevoUsuario)
+                });
+                if (res.ok) {
+                    alert("¡Usuario registrado con éxito!");
+                    bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide();
+                    document.getElementById("form-usuario").reset();
+                    cargarUsuarios();
+                } else { alert("Error al registrar usuario"); }
+            } catch (err) { alert("Error: " + err); }
+        });
+
+        // POST: Crear Orden de Trabajo
+        document.getElementById("form-orden").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const nuevaOrden = {
+                id_equipo: parseInt(document.getElementById("ot-id-equipo").value),
+                id_usuario_solicitante: parseInt(document.getElementById("ot-id-usuario").value),
+                descripcion_falla: document.getElementById("ot-descripcion").value,
+                prioridad: document.getElementById("ot-prioridad").value,
+                estado_ot: document.getElementById("ot-estado").value
+            };
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/ordenes/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(nuevaOrden)
+                });
+                if (res.ok) {
+                    alert("¡Orden de trabajo creada exitosamente!");
+                    bootstrap.Modal.getInstance(document.getElementById('modalOrden')).hide();
+                    document.getElementById("form-orden").reset();
+                    cargarOrdenes();
+                    cargarDashboard();
+                } else { alert("Error al crear la orden de trabajo"); }
+            } catch (err) { alert("Error: " + err); }
+        });
+
+        // Abrir modal de estado
+        function abrirModalEstado(id, estadoActual) {
+            document.getElementById("edit-id-equipo").value = id;
+            document.getElementById("nuevo-estado").value = estadoActual;
+            new bootstrap.Modal(document.getElementById('modalEstado')).show();
+        }
+
+        // PUT: Actualizar estado de equipo
+        document.getElementById("form-cambiar-estado").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const id = document.getElementById("edit-id-equipo").value;
+            const nuevoEstado = document.getElementById("nuevo-estado").value;
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/equipos/${id}/estado?nuevo_estado=${encodeURIComponent(nuevoEstado)}`, {
+                    method: "PUT"
+                });
+                if (res.ok) {
+                    alert("¡Estado actualizado correctamente!");
+                    bootstrap.Modal.getInstance(document.getElementById('modalEstado')).hide();
+                    cargarEquipos();
+                    cargarDashboard();
+                } else { alert("Error al actualizar el estado"); }
+            } catch (err) { alert("Error: " + err); }
+        });
+
+        // Inicializar dashboard al cargar
         window.onload = () => {
-            cargarEquipos();
+            cargarDashboard();
         };
     </script>
 </body>
