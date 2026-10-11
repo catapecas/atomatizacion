@@ -9,8 +9,7 @@ router = APIRouter(prefix="/api/usuarios", tags=["Gestión de Usuarios"])
 class UsuarioCreate(BaseModel):
     nombre: str
     email: str
-    password_hash: Optional[str] = "default_hash"
-    id_rol: Optional[int] = 1
+    rol: Optional[str] = "Técnico"
 
 class UsuarioUpdate(BaseModel):
     nombre: Optional[str] = None
@@ -51,6 +50,11 @@ def crear_usuario(usuario: UsuarioCreate):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        
+        # Asignamos valores por defecto seguros para password_hash e id_rol en la base de datos
+        password_por_defecto = "123456"
+        rol_id_por_defecto = 1 if usuario.rol == "Técnico" else 2
+
         sql = """
             INSERT INTO USUARIOS (NOMBRE, EMAIL, PASSWORD_HASH, ID_ROL)
             VALUES (:1, :2, :3, :4)
@@ -58,8 +62,8 @@ def crear_usuario(usuario: UsuarioCreate):
         cursor.execute(sql, (
             usuario.nombre, 
             usuario.email, 
-            usuario.password_hash, 
-            usuario.id_rol
+            password_por_defecto, 
+            rol_id_por_defecto
         ))
         conn.commit()
         cursor.close()
@@ -77,14 +81,14 @@ def actualizar_usuario(id_usuario: int, usuario: UsuarioUpdate):
         sql = """
             UPDATE USUARIOS 
             SET NOMBRE = COALESCE(:1, NOMBRE),
-                EMAIL = COALESCE(:2, EMAIL),
+                CORREO = COALESCE(:2, CORREO),
                 PASSWORD_HASH = COALESCE(:3, PASSWORD_HASH),
                 ID_ROL = COALESCE(:4, ID_ROL)
             WHERE ID_USUARIO = :5
         """
         cursor.execute(sql, (
             usuario.nombre,
-            usuario.email,
+            usuario.coreo,
             usuario.password_hash,
             usuario.id_rol,
             id_usuario
