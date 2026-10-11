@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Automatización Industrial</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; }
+        .sidebar { background: #212529; min-height: 100vh; color: white; }
+        .card { border: none; border-radius: 12px; }
+        .nav-pills .nav-link.active { background-color: #0d6efd; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Barra Lateral de Navegación -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
+                <h4 class="text-white py-3 border-bottom border-secondary">
+                    <i class="bi bi-gear-fill text-primary"></i> Industrial DB
+                </h4>
+                <ul class="nav nav-pills flex-column mt-3 gap-2" id="v-pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active text-start w-100 text-white" id="tab-equipos" data-bs-toggle="pill" data-bs-target="#content-equipos" type="button" onclick="cargarEquipos()">
+                            <i class="bi bi-cpu me-2"></i> Equipos
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link text-start w-100 text-white" id="tab-usuarios" data-bs-toggle="pill" data-bs-target="#content-usuarios" type="button" onclick="cargarUsuarios()">
+                            <i class="bi bi-people me-2"></i> Usuarios
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link text-start w-100 text-white" id="tab-ordenes" data-bs-toggle="pill" data-bs-target="#content-ordenes" type="button" onclick="cargarOrdenes()">
+                            <i class="bi bi-clipboard-data me-2"></i> Órdenes de Trabajo
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Contenido Principal -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                
+                <!-- Encabezado Superior -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h3 fw-bold text-dark">Panel de Control de Mantenimiento</h1>
+                    <span class="badge bg-success p-2 fs-6"><i class="bi bi-cloud-check me-1"></i> Conectado a Oracle Cloud</span>
+                </div>
+
+                <!-- Contenido Dinámico con Pestañas -->
+                <div class="tab-content" id="v-pills-tabContent">
+                    
+                    <!-- SECCIÓN EQUIPOS -->
+                    <div class="tab-pane fade show active" id="content-equipos" role="tabpanel">
+                        <div class="card shadow-sm p-4 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="fw-bold text-secondary"><i class="bi bi-cpu me-2"></i> Listado de Equipos de Automatización</h4>
+                                <div>
+                                    <button class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEquipo">
+                                        <i class="bi bi-plus-circle me-1"></i> Nuevo Equipo
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="cargarEquipos()">
+                                        <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mt-2" id="tabla-equipos">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Código Activo</th>
+                                            <th>Nombre</th>
+                                            <th>Tipo</th>
+                                            <th>Ubicación</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llena con JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN USUARIOS -->
+                    <div class="tab-pane fade" id="content-usuarios" role="tabpanel">
+                        <div class="card shadow-sm p-4 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="fw-bold text-secondary"><i class="bi bi-people me-2"></i> Listado de Usuarios del Sistema</h4>
+                                <button class="btn btn-primary btn-sm" onclick="cargarUsuarios()"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mt-2" id="tabla-usuarios">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Correo</th>
+                                            <th>Rol</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llena con JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN ÓRDENES DE TRABAJO -->
+                    <div class="tab-pane fade" id="content-ordenes" role="tabpanel">
+                        <div class="card shadow-sm p-4 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="fw-bold text-secondary"><i class="bi bi-clipboard-data me-2"></i> Órdenes de Trabajo (Relacionales)</h4>
+                                <button class="btn btn-primary btn-sm" onclick="cargarOrdenes()"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mt-2" id="tabla-ordenes">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID OT</th>
+                                            <th>Equipo</th>
+                                            <th>Solicitante</th>
+                                            <th>Descripción Falla</th>
+                                            <th>Prioridad</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Se llena con JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL PARA CREAR NUEVO EQUIPO -->
+    <div class="modal fade" id="modalEquipo" tabindex="-1" aria-labelledby="modalEquipoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalEquipoLabel"><i class="bi bi-plus-circle me-2"></i> Registrar Nuevo Equipo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-equipo">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Código de Activo</label>
+                            <input type="text" class="form-control" id="codigo_activo" required placeholder="Ej. ACT-003">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nombre del Equipo</label>
+                            <input type="text" class="form-control" id="nombre_equipo" required placeholder="Ej. Brazo Robotico KUKA">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo</label>
+                            <input type="text" class="form-control" id="tipo" required placeholder="Ej. Robotica / PLC">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ubicación en Planta</label>
+                            <input type="text" class="form-control" id="ubicacion_planta" required placeholder="Ej. Linea de Ensamblaje 2">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Estado</label>
+                            <select class="form-select" id="estado">
+                                <option value="Operativo">Operativo</option>
+                                <option value="En Mantenimiento">En Mantenimiento</option>
+                                <option value="Fuera de Servicio">Fuera de Servicio</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save me-1"></i> Guardar Equipo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script JavaScript para consumir y enviar datos a la API -->
+    <script>
+        const BASE_URL = "https://vigilant-space-computing-4jv94p6g5r9rcjv47-8000.app.github.dev";
+
+        // Cargar Equipos
+        async function cargarEquipos() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/equipos/`);
+                const data = await res.json();
+                const tbody = document.querySelector("#tabla-equipos tbody");
+                tbody.innerHTML = "";
+                data.forEach(eq => {
+                    tbody.innerHTML += `<tr>
+                        <td><strong>#${eq.id_equipo}</strong></td>
+                        <td>${eq.codigo_activo}</td>
+                        <td>${eq.nombre_equipo}</td>
+                        <td>${eq.tipo}</td>
+                        <td>${eq.ubicacion_planta}</td>
+                        <td><span class="badge bg-success">${eq.estado}</span></td>
+                    </tr>`;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        // Cargar Usuarios
+        async function cargarUsuarios() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/usuarios/`);
+                const data = await res.json();
+                const tbody = document.querySelector("#tabla-usuarios tbody");
+                tbody.innerHTML = "";
+                data.forEach(u => {
+                    tbody.innerHTML += `<tr>
+                        <td><strong>#${u.id_usuario}</strong></td>
+                        <td>${u.nombre}</td>
+                        <td>${u.correo}</td>
+                        <td><span class="badge bg-info text-dark">${u.rol}</span></td>
+                    </tr>`;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        // Cargar Órdenes de Trabajo (con JOIN del backend)
+        async function cargarOrdenes() {
+            try {
+                const res = await fetch(`${BASE_URL}/api/ordenes/`);
+                const data = await res.json();
+                const tbody = document.querySelector("#tabla-ordenes tbody");
+                tbody.innerHTML = "";
+                data.forEach(ot => {
+                    let badgePrioridad = ot.prioridad === 'Alta' ? 'bg-danger' : 'bg-warning text-dark';
+                    tbody.innerHTML += `<tr>
+                        <td><strong>#${ot.id_ot}</strong></td>
+                        <td>${ot.nombre_equipo || 'Equipo #' + ot.id_equipo}</td>
+                        <td>${ot.usuario_solicitante || 'Usuario #' + ot.id_usuario_solicitante}</td>
+                        <td>${ot.descripcion_falla}</td>
+                        <td><span class="badge ${badgePrioridad}">${ot.prioridad}</span></td>
+                        <td><span class="badge bg-secondary">${ot.estado_ot}</span></td>
+                    </tr>`;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        // Enviar formulario para crear un nuevo equipo por POST
+        document.getElementById("form-equipo").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const nuevoEquipo = {
+                codigo_activo: document.getElementById("codigo_activo").value,
+                nombre_equipo: document.getElementById("nombre_equipo").value,
+                tipo: document.getElementById("tipo").value,
+                ubicacion_planta: document.getElementById("ubicacion_planta").value,
+                estado: document.getElementById("estado").value
+            };
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/equipos/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(nuevoEquipo)
+                });
+
+                if (res.ok) {
+                    alert("¡Equipo creado exitosamente!");
+                    // Cerrar modal
+                    const modalEl = document.getElementById('modalEquipo');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    modal.hide();
+                    // Limpiar formulario
+                    document.getElementById("form-equipo").reset();
+                    // Recargar tabla de equipos
+                    cargarEquipos();
+                } else {
+                    alert("Error al crear el equipo");
+                }
+            } catch (err) {
+                alert("Error de conexión: " + err);
+            }
+        });
+
+        // Cargar equipos al iniciar la página
+        window.onload = () => {
+            cargarEquipos();
+        };
+    </script>
+</body>
+</html>
